@@ -61,7 +61,7 @@ class ONNX_Exporter(DefaultPredictor):
             self.model.proposal_generator.onnx_export = True
             self.model.roi_heads.onnx_export = True
             
-            builtin_grid_sampler = False
+            builtin_grid_sampler = True
             if builtin_grid_sampler:
                 xx = (Variable(image.unsqueeze(0)), Variable(torch.tensor((height, width), dtype=torch.long)))
                 input_names = ["img", "im_hw"]
