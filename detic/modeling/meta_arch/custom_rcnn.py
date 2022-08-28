@@ -117,13 +117,13 @@ class CustomRCNN(GeneralizedRCNN):
     def export_forward(self, image, image_size=None):
         inputs = {"image": image[0]}
         batched_inputs = [inputs]
-        image_sizes = [image_size]
+        image_sizes = [image_size] if image_size is not None else None
         x = self.inference(batched_inputs, image_sizes=image_sizes)
         
-        # x = x[0]
-        # return x.pred_boxes.tensor, x.scores, x.pred_classes
-        
-        x = x[0]["instances"]
+        if isinstance(x[0], dict):
+            x = x[0]["instances"]
+        else:
+            x = x[0]
         return x.pred_boxes.tensor, x.scores, x.pred_classes, x.pred_masks
 
 

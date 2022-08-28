@@ -61,14 +61,20 @@ class ONNX_Exporter(DefaultPredictor):
             self.model.proposal_generator.onnx_export = True
             self.model.roi_heads.onnx_export = True
             
-            # xx = Variable(image.unsqueeze(0))
-            xx = (Variable(image.unsqueeze(0)), Variable(torch.tensor((height, width), dtype=torch.long)))
+            builtin_grid_sampler = False
+            if builtin_grid_sampler:
+                xx = (Variable(image.unsqueeze(0)), Variable(torch.tensor((height, width), dtype=torch.long)))
+                input_names = ["img", "im_hw"]
+            else:
+                xx = Variable(image.unsqueeze(0))
+                input_names = ["img"]
+
             torch.onnx.export(
                 self.model, xx, 'xxx.onnx',
-                input_names=["img", "im_hw"],
+                input_names=input_names,
                 output_names=["pred_boxes", "scores", "pred_classes", "pred_masks"],
                 dynamic_axes={'img' : {2 : 'h', 3 : 'w'},},
-                verbose=False, opset_version=16
+                verbose=False, opset_version=16 if builtin_grid_sampler else 12
             )
             print("<------")
 
